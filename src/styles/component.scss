@@ -1,0 +1,135 @@
+@import './colorSheet.scss';
+
+@mixin colorBtn($color) {
+  background: $color;
+
+  &:hover {
+    color: $color;
+
+    &:before,
+    &:after {
+      background: $color;
+    }
+  }
+}
+
+@mixin iconBtn($color) {
+  color: $color;
+}
+
+@mixin fixedBar {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 100;
+}
+
+@mixin sidePanel($color) {
+  height: 100%;
+  position: fixed;
+  left: -300px;
+  top: 64px;
+  transition: all .3s;
+
+  .v-list {
+    .list_Active {
+      color: $color !important;
+    }
+
+    .activeRoot {
+      .v-list__group__header__prepend-icon {
+        .v-icon {
+          color: $color !important;
+        }
+      }
+
+      .v-list__group__header--sub-group {
+        .v-icon {
+          color: $default !important;
+        }
+      }
+    }
+
+    .linkedItem {
+      color: $color !important;
+
+      .v-list__tile__action {
+        .v-icon {
+          color: $color !important;
+        }
+      }
+    }
+
+    .delArrow {
+      .v-list__group__header__append-icon {
+        i {
+          opacity: 0;
+        }
+      }
+    }
+
+    .v-list__group__items {
+      .delArrow {
+        .v-list__group__header__prepend-icon {
+          i {
+            opacity: 0;
+          }
+        }
+      }
+    }
+
+    .v-list__group--active {
+      .v-list__group__header--active:first {
+        .v-list__tile__title {}
+      }
+
+      .v-list__group__header__prepend-icon.primary--text {
+        color: $color !important;
+      }
+
+      .v-list__group__items {
+        .v-list__group__header__prepend-icon.primary--text {
+          color: $color !important;
+
+          .v-icon {
+            color: $default
+          }
+        }
+      }
+
+      .rootTitle {
+        color: $color !important;
+      }
+    }
+  }
+}
+
+@mixin navBar {
+  .button-group {
+    background-color: #f5f5f5;
+
+    .v-btn {
+      min-width: 88px;
+      height: 64px;
+    }
+  }
+}
+
+@mixin attachedOut {
+  display: flex;
+  align-items: flex-start;
+
+  @media(max-width: 768px) and (min-width:375px) {
+    display: flex;
+    align-items: flex-end;
+  }
+}
+
+@mixin attachedIn {
+  top: 0px;
+
+  @media(max-width: 768px) and (min-width:375px) {
+    top: auto;
+    bottom: 0px;
+  }
+}
