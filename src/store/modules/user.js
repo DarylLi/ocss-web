@@ -34,9 +34,16 @@ const user = {
       state.localMessage.push(value);
       localStorage.setItem('localMessage', JSON.stringify(state.localMessage))
     },
-    DELETE_MESSAGE_LIST(state){
-      state.localMessage=[]
+    DELETE_MESSAGE_LIST(state) {
+      state.localMessage = []
       localStorage.setItem('localMessage', JSON.stringify(state.localMessage))
+    }
+  },
+  actions: {
+    setMessageList({
+      commit
+    }, data) {
+      commit('SET_MESSAGE_LIST', data)
     }
   }
 }

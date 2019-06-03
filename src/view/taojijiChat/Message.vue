@@ -191,10 +191,10 @@ export default {
         this.msgContainer = document.getElementById("msgContainer")
         this.containerHeight = this.msgContainer.offsetHeight;
         this.msgPanel.scrollTo(150, this.containerHeight);
-      // this.satisfiedList = this.MessageList.filter((e, i) => {
-      //   return e.type = 'SATISFIED'
-      // })
-      // console.log(this.satisfiedList.length, 'wawawaa')
+        // this.satisfiedList = this.MessageList.filter((e, i) => {
+        //   return e.type = 'SATISFIED'
+        // })
+        // console.log(this.satisfiedList.length, 'wawawaa')
       })
       // this.satisfiedList = this.MessageList.filter((e, i) => {
       //   return e.type = 'SATISFIED'
@@ -245,7 +245,7 @@ export default {
       this.dialog = true;
     },
     refreshList(scroll) {
-      let scroll=scroll||true;
+      var scroll = scroll || 'on';
       getHistory({ name: this.curUser.userId, curPage: ++this.curPage, agent: this.curAgent.tenantId }).then(res => {
         let mergedMsg = [...res.object, ...store.getters.localMessage]
         this.sorted.length != mergedMsg.length ? (() => {
@@ -254,10 +254,12 @@ export default {
           });
         })() : --this.curPage
         this.loading = false;
-        this.$nextTick(() => {
-          scroll?this.msgPanel.scrollTo(150, 10):'';
+        // store.commit('SET_MESSAGE_LIST', this.sorted);
+        store.dispatch('setMessageList', this.sorted).then(() => {
+          this.$nextTick(() => {
+            scroll == 'on' ? this.msgPanel.scrollTo(150, 10) : '';
+          })
         })
-        store.commit('SET_MESSAGE_LIST', this.sorted);
         // this.msgPanel = document.getElementById("MessagePannel")
         // this.msgPanel.scrollTo(50, 10);
       })
@@ -302,7 +304,7 @@ export default {
           store.commit('SET_SOCKET_STATUS', { message: `您对本次服务评价为：${this.parseRate(this.rating)}。非常感谢！`, show: true });
           store.commit('SET_SATISFIED', null)
         }, 500)
-        this.refreshList(false);
+        this.refreshList('off');
         setTimeout(() => {
           this.rating = 4;
         }, 4000)
