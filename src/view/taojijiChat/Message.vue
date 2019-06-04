@@ -15,7 +15,6 @@
               </template>
             </v-img>
           </v-card-text>
-          </v-card-actions>
         </v-card>
       </v-dialog>
     </v-card>
@@ -26,7 +25,7 @@
           {{sorted[0]?formatDate(sorted[0].time):''}}
           <v-card v-if="tasks.length > 0" class='mainPanel'>
             <v-scale-transition class="py-0" group tag="v-list">
-              <v-list v-for='(item,index) in sorted' v-bind:key='item.time' :class="{'list-complete-item':true,'right-ctxt':item.direction=='IN','left-ctxt':item.direction!='IN'}" v-if='item.type!="SATISFIED"||item.type=="SATISFIED"&&satisfiedContent&&index==sorted.length-2'>
+              <v-list v-for='(item,index) in sorted' v-bind:key='item.time+index' :class="{'list-complete-item':true,'right-ctxt':item.direction=='IN','left-ctxt':item.direction!='IN'}" v-if='item.type!="SATISFIED"||item.type=="SATISFIED"&&satisfiedContent&&(index==sorted.length-3||index==sorted.length-1)'>
                 <!-- <v-btn color="warning">
               Reset Validation
             </v-btn> -->
@@ -47,7 +46,7 @@
                   </v-list-tile-content>
                   <v-card>
                     <!-- <v-card-title class="headline">{{item.direction=='IN'?item.userId:item.agentId}}</v-card-title> -->
-                    <v-card-text v-if='item.type=="TEXT"'>
+                    <v-card-text v-if='item.type=="TEXT"||item.type=="MANUAL"'>
                       {{item.content}}
                     </v-card-text>
                     <v-card-text v-if='item.type=="QA"'>
@@ -60,14 +59,17 @@
                             <v-list-tile-title>常见问题</v-list-tile-title>
                           </v-list-tile>
                         </template>
+                        <v-list-tile @click="sendFaq({content:ctxt.faqId})" v-bind:key='ctxt.faqId' v-for='ctxt in JSON.parse(item.content)'>
+                          <v-list-tile-title>{{ctxt.chatbotMessage}}</v-list-tile-title>
+                        </v-list-tile>
                         <v-list-tile @click="request">
-                          <v-list-tile-title v-text="">请求人工客服</v-list-tile-title>
+                          <v-list-tile-title>咨询人工客服</v-list-tile-title>
                         </v-list-tile>
                       </v-list-group>
                     </v-card-text>
                     <v-card-text v-if='item.type=="IMAGE"'>
                       <!-- <img :src="JSON.parse(item.content).originFile.url" style="max-width:220px;width:100%;"> -->
-                      <v-img @click="showImg(JSON.parse(item.content).originFile.url)" :src="JSON.parse(item.content).originFile.url" style="max-width:220px;width:100%;" :lazy-src="JSON.parse(item.content).originFile.url" aspect-ratio="1" class="grey lighten-2">
+                      <v-img @click="showImg(JSON.parse(item.content).originFile.url)" :src="JSON.parse(item.content).originFile.url" style="max-width:200px;width:100%;" :lazy-src="JSON.parse(item.content).originFile.url" aspect-ratio="1" class="grey lighten-2">
                         <template v-slot:placeholder>
                           <v-layout fill-height align-center justify-center ma-0>
                             <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
@@ -100,13 +102,13 @@
   </v-app>
 </template>
 <script>
-import { getContext, actionStartChating, getHistory, addSatisficing } from '@/api'
+import { getHistory, addSatisficing } from '@/api'
 import chattingForm from '@/components/taojijiChat/chattingForm'
-import store from 'store';
+import store from 'store'
 import { mapGetters } from 'vuex'
 export default {
   props: { socket: null },
-  data() {
+  data () {
     return {
       agentid: '',
       nickname: '',
@@ -124,51 +126,51 @@ export default {
       dialog: false,
       curImg: '',
       tasks: [{
-          done: false,
-          text: 'Foobar'
-        },
-        {
-          done: false,
-          text: 'Fizzbuzz'
-        }
+        done: false,
+        text: 'Foobar'
+      },
+      {
+        done: false,
+        text: 'Fizzbuzz'
+      }
       ],
       loading: false,
       idRules: [
-        v => !!v || 'id is required',
+        v => !!v || 'id is required'
       ],
       nameRules: [
-        v => !!v || 'Name is required',
-      ],
+        v => !!v || 'Name is required'
+      ]
       // socket: null
     }
   },
   components: {
     chattingForm
   },
-  destroyed() {
+  destroyed () {
     // this.socket.disconnect()
-    store.commit('DELETE_MESSAGE_LIST');
+    store.commit('DELETE_MESSAGE_LIST')
   },
-  created() {
+  created () {
     getHistory({ name: this.curUser.userId, curPage: 1, agent: this.curAgent.tenantId }).then(res => {
       let mergedMsg = [...res.object, ...store.getters.localMessage]
-      this.sorted = this.$_.sortBy(mergedMsg, function(item) {
-        return item.time;
-      });
-      store.commit('SET_MESSAGE_LIST', this.sorted);
-      this.msgPanel = document.getElementById("MessagePannel")
+      this.sorted = this.$_.sortBy(mergedMsg, function (item) {
+        return item.time
+      })
+      store.commit('SET_MESSAGE_LIST', this.sorted)
+      this.msgPanel = document.getElementById('MessagePannel')
       this.$nextTick(() => {
-        this.msgPanel.scrollTo(150, 10);
+        if (this.msgPanel) this.msgPanel.scrollTo(150, 10)
       })
     })
   },
-  mounted() {
-    let messageUpdate = store.getters.messageUpdate;
-    messageUpdate[this.curAgent.contextId] = 0;
-    store.commit('SET_MESSAGE_UPDATE', messageUpdate);
+  mounted () {
+    let messageUpdate = store.getters.messageUpdate
+    messageUpdate[this.curAgent.contextId] = 0
+    store.commit('SET_MESSAGE_UPDATE', messageUpdate)
     setTimeout(() => {
-      this.panelShow = true;
-      store.getters.curAgent.status == 0 ? this.requestBot() : ''
+      this.panelShow = true
+      void (store.getters.curAgent.status === 0 ? this.requestBot() : '')
     }, 300)
     // this.socket = actionStartChating({
     //   id: this.curUser.userId,
@@ -181,16 +183,16 @@ export default {
   },
   computed: {
     ...mapGetters(['curUser', 'curAgent', 'socketStatus', 'satisfiedContent']),
-    MessageList() {
+    MessageList () {
       return store.getters.MessageList
     }
   },
   watch: {
-    MessageList(val) {
+    MessageList (val) {
       this.$nextTick(() => {
-        this.msgContainer = document.getElementById("msgContainer")
-        this.containerHeight = this.msgContainer.offsetHeight;
-        this.msgPanel.scrollTo(150, this.containerHeight);
+        this.msgContainer = document.getElementById('msgContainer')
+        this.containerHeight = this.msgContainer.offsetHeight
+        if (this.msgPanel) this.msgPanel.scrollTo(150, this.containerHeight)
         // this.satisfiedList = this.MessageList.filter((e, i) => {
         //   return e.type = 'SATISFIED'
         // })
@@ -203,13 +205,13 @@ export default {
     }
   },
   methods: {
-    sendMessage(data) {
+    sendMessage (data) {
       let content = {
-        "contextId": this.curAgent.contextId,
-        "userId": this.curUser.userId,
-        "tenantId": this.curAgent.tenantId,
-        "type": data.type,
-        "content": data.content
+        'contextId': this.curAgent.contextId,
+        'userId': this.curUser.userId,
+        'tenantId': this.curAgent.tenantId,
+        'type': data.type,
+        'content': data.content
       }
       this.socketAgent.socket.submit(content)
       // this.$nextTick(() => {
@@ -218,18 +220,18 @@ export default {
       //   this.msgPanel.scrollTo(150, this.containerHeight);
       // })
     },
-    request() {
+    request () {
       let data = {
-        "userId": this.curUser.userId,
-        "tenantId": this.curAgent.tenantId,
-        "ip": '192.168.232.2',
-        "channel": 'APP'
+        'userId': this.curUser.userId,
+        'tenantId': this.curAgent.tenantId,
+        'ip': '192.168.232.2',
+        'channel': 'APP'
       }
       this.socketAgent.socket.request(data)
     },
-    closeChat() {
+    closeChat () {
       let data = {
-        "contextId": this.curAgent.contextId
+        'contextId': this.curAgent.contextId
       }
       this.socketAgent.socket.chat_end(data)
     },
@@ -240,31 +242,31 @@ export default {
     //     this.msgPanel.scrollTo(150, this.containerHeight);
     //   })
     // },
-    showImg(src) {
-      this.curImg = src;
-      this.dialog = true;
+    showImg (src) {
+      this.curImg = src
+      this.dialog = true
     },
-    refreshList(scroll) {
-      var scroll = scroll || 'on';
+    refreshList (scrollFlag) {
+      var scroll = scrollFlag || 'on'
       getHistory({ name: this.curUser.userId, curPage: ++this.curPage, agent: this.curAgent.tenantId }).then(res => {
         let mergedMsg = [...res.object, ...store.getters.localMessage]
-        this.sorted.length != mergedMsg.length ? (() => {
-          this.sorted = this.$_.sortBy(mergedMsg, function(item) {
-            return item.time;
-          });
+        this.sorted.length !== mergedMsg.length ? (() => {
+          this.sorted = this.$_.sortBy(mergedMsg, function (item) {
+            return item.time
+          })
         })() : --this.curPage
-        this.loading = false;
-        // store.commit('SET_MESSAGE_LIST', this.sorted);
+        this.loading = false
+        // store.commit('SET_MESSAGE_LIST', this.sorted)
         store.dispatch('setMessageList', this.sorted).then(() => {
           this.$nextTick(() => {
-            scroll == 'on' ? this.msgPanel.scrollTo(150, 10) : '';
+            void (scroll === 'on' ? this.msgPanel.scrollTo(150, 10) : '')
           })
         })
         // this.msgPanel = document.getElementById("MessagePannel")
-        // this.msgPanel.scrollTo(50, 10);
+        // this.msgPanel.scrollTo(50, 10)
       })
     },
-    parseRate(num) {
+    parseRate (num) {
       let result = {
         5: this.satisfiedContent[0],
         4: this.satisfiedContent[1],
@@ -274,41 +276,51 @@ export default {
       }
       return result[num]
     },
-    requestBot() {
+    requestBot () {
       this.socketAgent.socket.chatbot({
-        "userId": this.curUser.userId,
-        "tenantId": this.curAgent.tenantId,
-        "channel": 'APP'
+        'userId': this.curUser.userId,
+        'tenantId': this.curAgent.tenantId,
+        'channel': 'APP'
       })
     },
-    onScroll(e) {
+    sendFaq (data) {
+      let content = {
+        'contextId': this.curAgent.contextId,
+        'userId': this.curUser.userId,
+        'tenantId': this.curAgent.tenantId,
+        'type': 'FAQ',
+        'content': data.content
+      }
+      this.socketAgent.socket.submit(content)
+    },
+    onScroll (e) {
       this.offsetTop = e.target.scrollTop
-      this.msgContainer = document.getElementById("msgContainer")
-      this.contentHeight = this.msgPanel.offsetHeight - 10;
-      this.containerHeight = this.msgContainer.offsetHeight;
+      this.msgContainer = document.getElementById('msgContainer')
+      this.contentHeight = this.msgPanel.offsetHeight - 10
+      this.containerHeight = this.msgContainer.offsetHeight
       // console.log(this.loading)
-      void(e.target.scrollTop == 0 && !this.loading ? (() => {
-        this.loading = true;
+      void (e.target.scrollTop === 0 && !this.loading ? (() => {
+        this.loading = true
         // console.log(this.loading)
         this.refreshList()
       })() : '')
       // console.log(e.target.scrollTop, this.contentHeight, this.containerHeight)
     },
-    getRating(contextId) {
-      let formData = new FormData();
-      formData.append("contextId", contextId);
-      formData.append("score", this.rating);
+    getRating (contextId) {
+      let formData = new FormData()
+      formData.append('contextId', contextId)
+      formData.append('score', this.rating)
       addSatisficing(formData).then(res => {
-        store.commit('SET_SOCKET_STATUS', { message: `${this.socketStatus.message}`, show: false });
+        store.commit('SET_SOCKET_STATUS', { message: `${this.socketStatus.message}`, show: false })
         setTimeout(() => {
-          store.commit('SET_SOCKET_STATUS', { message: `您对本次服务评价为：${this.parseRate(this.rating)}。非常感谢！`, show: true });
+          store.commit('SET_SOCKET_STATUS', { message: `您对本次服务评价为：${this.parseRate(this.rating)}。非常感谢！`, show: true })
           store.commit('SET_SATISFIED', null)
         }, 500)
-        this.refreshList('off');
+        this.refreshList('off')
         setTimeout(() => {
-          this.rating = 4;
+          this.rating = 4
         }, 4000)
-      });
+      })
     }
     // getContext(this.agentid).then(res=>{
     // })
@@ -351,6 +363,20 @@ export default {
       .v-list__tile__title {
         color: #000;
         font-size: 14px;
+      }
+      .faqCtxt{
+        .v-list__tile{
+          height:35px;
+        }
+        .v-list__group__header__prepend-icon{
+          min-width:15px;
+          padding:0px 0 0 0px;
+        }
+        .v-list__group__items{
+          .v-list__tile{
+            padding-left:40px;
+          }
+        }
       }
     }
 

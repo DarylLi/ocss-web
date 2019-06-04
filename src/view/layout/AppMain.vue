@@ -15,18 +15,18 @@ export default {
   props: {
     modeLayout: {
       default: 1
-    },
+    }
   },
   computed: {
     ...mapGetters(['curPath']),
-    key() {
-      return this.$route.name !== undefined ?
-        this.$route.name + +new Date() :
-        this.$route + +new Date()
+    key () {
+      return this.$route.name !== undefined
+        ? this.$route.name + +new Date()
+        : this.$route + +new Date()
     }
   },
   watch: {
-    '$route'(to, from) {
+    '$route' (to, from) {
       const toDepth = to.path.split('/').length
       const fromDepth = from.path.split('/').length
       this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
@@ -95,7 +95,6 @@ export default {
 .app-main .move-enter-active {
   transition: all .3s;
 }
-
 
 .app-main .move-enter {
   opacity: 0;

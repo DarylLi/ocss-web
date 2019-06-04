@@ -6,17 +6,14 @@
 <script>
 export default {
   props: { loadingState:false },
-  data() {
+  data () {
     return {}
   },
-  created() {},
-  mounted() {
+  created () {},
+  mounted () {
 
   },
   methods: {
-    fckout() {
-      alert('damn it!')
-    }
   }
 }
 

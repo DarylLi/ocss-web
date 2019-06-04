@@ -16,13 +16,14 @@ module.exports = {
     // proxyTable: {},
 
     // // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '0.0.0.0', // can be overwritten by process.env.HOST
     // port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     // autoOpenBrowser: false,
-    // errorOverlay: true,
-    // notifyOnErrors: true,
-    // poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
-
+    errorOverlay: true,
+    notifyOnErrors: true,
+    poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
+    useEslint: true,
+    showEslintErrorsInOverlay: false,
     // proxyTable: {
     //   // '/cboard_war_exploded': {
     //   //   target: 'http://192.168.137.1:8080',
@@ -49,12 +50,12 @@ module.exports = {
     //  */
 
     // // https://webpack.js.org/configuration/devtool/#development
-    // devtool: 'cheap-module-eval-source-map',
+    devtool: 'cheap-module-eval-source-map',
 
     // // If you have problems debugging vue-files in devtools,
     // // set this to false - it *may* help
     // // https://vue-loader.vuejs.org/en/options.html#cachebusting
-    // cacheBusting: true,
+    cacheBusting: true,
 
     cssSourceMap: false
   },

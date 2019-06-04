@@ -69,6 +69,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 import { mapGetters } from 'vuex'
 import store from 'store';
 export default {

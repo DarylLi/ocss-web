@@ -14,7 +14,7 @@ const getters = {
   curPath: state => state.app.curPath,
   messageUpdate: state => state.app.messageUpdate,
   socketStatus: state => state.app.socketStatus,
-  satisfiedContent:state => state.user.satisfiedContent,
-  localMessage:state => state.user.localMessage
+  satisfiedContent: state => state.user.satisfiedContent,
+  localMessage: state => state.user.localMessage
 }
 export default getters

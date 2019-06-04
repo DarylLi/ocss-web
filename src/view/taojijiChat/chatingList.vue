@@ -39,23 +39,22 @@
   </v-layout>
 </template>
 <script>
-import store from 'store';
-import { mapGetters } from 'vuex';
-import { actionStartChating } from '@/api'
+import store from 'store'
+import { mapGetters } from 'vuex'
 import { getContext } from '@/api'
 export default {
-  data() {
+  data () {
     return {
       socket: null
     }
   },
   computed: {
     ...mapGetters(['curUser', 'curAgent']),
-    messageUpdate() {
+    messageUpdate () {
       return store.getters.messageUpdate
     }
   },
-  updated() {
+  updated () {
     // this.$nextTick(() => {
     //   getContext(this.curUser.userId).then(res => {
     //     if (res.object.length > 0) {
@@ -72,32 +71,32 @@ export default {
     // messageUpdate(val) {
     // }
   },
-  mounted() {
+  mounted () {
     // this.socket = actionStartChating({
     //    id: this.curUser.userId,
     //    nickname: this.curUser.nickname,
     //  });
-    if (this.messageUpdate) getContext(this.curUser.userId).then(res => {
-      // if (res.object.length > 0) {
-        let chatList = res.object;
-        let nameList = this.$_.uniq(chatList.map(e => e.tenantId));
-        let result = [];
+    if (this.messageUpdate) {
+      getContext(this.curUser.userId).then(res => {
+        // if (res.object.length > 0) {
+        let chatList = res.object
+        let nameList = this.$_.uniq(chatList.map(e => e.tenantId))
+        let result = []
         nameList.forEach(e => {
-          result.push(this.$_.sortBy(chatList.filter(item => item.tenantId == e), (sort) => {
+          result.push(this.$_.sortBy(chatList.filter(item => item.tenantId === e), (sort) => {
             return sort.time
           })[0])
         })
         store.commit('SET_USER', {
           nickname: this.curUser.nickname,
           userId: this.curUser.userId,
-          contextList: this.$_.sortBy(res.object, function(item) {
-            return item.time;
+          contextList: this.$_.sortBy(res.object, function (item) {
+            return item.time
           })
-        });
-
-        // store.commit('SET_MESSAGE_UPDATE', false)
-      // }
-    })
+        })
+        // }
+      })
+    }
   }
 }
 

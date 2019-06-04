@@ -28,10 +28,10 @@
   </div>
 </template>
 <script>
-import store from 'store';
+import store from 'store'
 import { uploadImg } from '@/api'
-import VEmojiPicker from 'v-emoji-picker';
-import packData from 'v-emoji-picker/data/emojis.json';
+import VEmojiPicker from 'v-emoji-picker'
+import packData from 'v-emoji-picker/data/emojis.json'
 export default {
   props: {
     value: {
@@ -39,11 +39,11 @@ export default {
     },
     accept: {
       type: String,
-      default: "*"
+      default: '*'
     },
     label: {
       type: String,
-      default: "Please choose..."
+      default: 'Please choose...'
     },
     required: {
       type: Boolean,
@@ -58,11 +58,11 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       password: 'Password',
       pack: packData,
-      filename: "",
+      filename: '',
       show: false,
       message: '',
       messageObj: {
@@ -86,10 +86,10 @@ export default {
       ]
     }
   },
-  created() {},
-  mounted() {
-    this.filename = this.value;
-    void(!store.getters.curAgent.contextId ? (() => {
+  created () {},
+  mounted () {
+    this.filename = this.value
+    void (!store.getters.curAgent.contextId ? (() => {
       store.commit('SET_AGENT', {
         tenantId: store.getters.curAgent.tenantId,
         contextId: '',
@@ -98,16 +98,16 @@ export default {
     })() : '')
   },
   watch: {
-    value(v) {
-      this.filename = v;
+    value (v) {
+      this.filename = v
     }
   },
   computed: {
-    icon() {
+    icon () {
       return this.icons[store.getters.curAgent.status]
     },
-    rules() {
-      const rules = [];
+    rules () {
+      const rules = []
       const rule =
         v => (this.$_.trim(v) || '').indexOf(' ') < 0 ||
         'No spaces are allowed'
@@ -119,61 +119,62 @@ export default {
     VEmojiPicker
   },
   methods: {
-    revert(val) {
-      return val == 0 ? 1 : 0;
+    revert (val) {
+      return val === 0 ? 1 : 0
     },
-    toggleMarker() {
+    toggleMarker () {
       this.marker = !this.marker
     },
-    sendMessage(message) {
+    sendMessage (message) {
       this.resetIcon()
       this.clearMessage()
-      this.messageObj.content = message;
-      void(this.$_.trim(message) ? this.$emit('sendMessage', this.messageObj) : '')
-      this.messageObj.type = 'TEXT';
+      this.messageObj.content = message
+      void (this.$_.trim(message) ? this.$emit('sendMessage', this.messageObj) : '')
+      this.messageObj.type = 'TEXT'
     },
-    clearMessage() {
+    clearMessage () {
       this.message = ''
     },
-    resetIcon() {
+    resetIcon () {
       this.iconIndex = 0
     },
-    changeAgent() {
-      store.getters.curAgent.status == 1 ? this.$emit('closeChat') : this.$emit('requestAgent');
-      this.iconIndex === this.icons.length - 1 ?
-        this.iconIndex = 0 :
-        this.iconIndex++
+    changeAgent () {
+      store.getters.curAgent.status === 1 ? this.$emit('closeChat') : this.$emit('requestAgent')
+      this.iconIndex === this.icons.length - 1
+        ? this.iconIndex = 0
+        : this.iconIndex++
     },
-    getFormData(files) {
-      const data = new FormData();
-      [...files].forEach(file => {
-        data.append('data', file, file.name); // currently only one file at a time
-      });
-      return data;
+    getFormData (files) {
+      const data = new FormData()
+      let arr = [...files]
+      arr.forEach(file => {
+        data.append('data', file, file.name) // currently only one file at a time //eslint-disable-next-line
+      })
+      return data
     },
-    onFocus() {
+    onFocus () {
       if (!this.disabled) {
-        this.$refs.fileInput.click();
+        this.$refs.fileInput.click()
       }
     },
-    chooseEmoji() {
-      this.showEmoji = !this.showEmoji;
+    chooseEmoji () {
+      this.showEmoji = !this.showEmoji
     },
-    selectEmoji(emoji) {
-      this.message += emoji.emoji;
-      this.showEmoji = false;
+    selectEmoji (emoji) {
+      this.message += emoji.emoji
+      this.showEmoji = false
     },
-    onFileChange($event) {
-      const files = $event.target.files || $event.dataTransfer.files;
+    onFileChange ($event) {
+      const files = $event.target.files || $event.dataTransfer.files
       store.commit('SET_PAGE_LOADED', false)
-      let formData = new FormData();
+      let formData = new FormData()
       for (var index in files) {
-        formData.append('img', files[index]);
+        formData.append('img', files[index])
       }
       uploadImg(formData).then(res => {
         if (res.object.length > 0) {
           res.object.forEach(e => {
-            this.messageObj.type = 'IMAGE';
+            this.messageObj.type = 'IMAGE'
             this.sendMessage(JSON.stringify(e))
             store.commit('SET_PAGE_LOADED', true)
           })
@@ -184,7 +185,6 @@ export default {
     }
   }
 }
-
 </script>
 <style lang="scss">
 @import "src/styles/mixin.scss";
@@ -215,18 +215,18 @@ export default {
   }
 
   .v-text-field {
-    margin-left: 60px;
+    margin-left: 60px!important;
     color: #fff;
   }
 
   .uploadBtn {
-    position: absolute;
+    position: absolute!important;
     top: 14px;
     left: -10px;
   }
 
   .emojiBtn {
-    position: absolute;
+    position: absolute!important;
     top: 14px;
     left: 22px;
     color: rgba(0, 0, 0, 0.54) !important;
@@ -246,7 +246,6 @@ export default {
     background: rgb(255, 102, 50) !important;
     border-color: rgb(255, 102, 50) !important;
   }
-
 
   .fadeIn-enter-active,
   .fadeIn-leave-active {

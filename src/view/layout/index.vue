@@ -39,10 +39,10 @@
   </div>
 </template>
 <script>
-import AppMain from './AppMain';
-import sideBar from './sidebar';
-import blockedUI from '../../components/blocked';
-import store from 'store';
+import AppMain from './AppMain'
+import sideBar from './sidebar'
+import blockedUI from '../../components/blocked'
+import store from 'store'
 import { mapGetters } from 'vuex'
 export default {
   name: 'layout',
@@ -51,7 +51,7 @@ export default {
     sideBar,
     blockedUI
   },
-  data() {
+  data () {
     return {
       hoverSide: false,
       mobileFlag: false,
@@ -68,32 +68,32 @@ export default {
   computed: {
     ...mapGetters(['admins', 'cruds', 'mode', 'sideShow', 'curUser', 'pageLoaded', 'curPath', 'curAgent'])
   },
-  created() {},
+  created () {},
   methods: {
-    logout() {
+    logout () {
       store.commit('SET_CURPATH', '/')
       store.commit('SET_SIDE_SHOW', false)
       store.commit('SET_PAGE_LOADED', true)
-      store.commit('SET_USER', {});
+      store.commit('SET_USER', {})
       store.commit('SET_MESSAGE_LIST', [])
-      this.$router.push('/');
+      this.$router.push('/')
     },
-    linkUrl(url) {
-      this.commonMethods.linkUrl(url);
+    linkUrl (url) {
+      this.commonMethods.linkUrl(url)
       // this.$router.push(url)
     },
-    toggleClass() {
-      store.getters.mode == 'normal' ? store.commit('SET_MODE', 'extends') : store.commit('SET_MODE', 'normal')
+    toggleClass () {
+      store.getters.mode === 'normal' ? store.commit('SET_MODE', 'extends') : store.commit('SET_MODE', 'normal')
     },
-    toggleSide() {
+    toggleSide () {
       store.commit('SET_SIDE_SHOW', !store.getters.sideShow)
     },
-    back(curPath) {
-      this.linkUrl('/chatList');
+    back (curPath) {
+      this.linkUrl('/chatList')
     },
-    selectAgent(data){
-      this.chooseAgent(data);
-      this.tenantId='';
+    selectAgent (data) {
+      this.chooseAgent(data)
+      this.tenantId = ''
     }
   }
 }

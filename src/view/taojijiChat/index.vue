@@ -34,59 +34,61 @@
 </template>
 <script>
 import { getContext } from '@/api'
-import store from 'store';
+import store from 'store'
 export default {
-  data() {
+  data () {
     return {
       userId: '',
       nickname: '',
       valid: false,
       idRules: [
-        v => !!v || '请输入用户id',
+        v => !!v || '请输入用户id'
       ],
       nameRules: [
-        v => !!v || '请输入用户昵称',
+        v => !!v || '请输入用户昵称'
       ],
       socket: null
     }
   },
-  created() {},
-  mounted() {
-    void(this.socketAgent ? (() => {
-      this.socketAgent.socket.disconnect();
+  created () {},
+  mounted () {
+    void (this.socketAgent ? (() => {
+      this.socketAgent.socket.disconnect()
     })() : '')
   },
   methods: {
-    login() {
+    login () {
       // this.$validator.validateAll()
       this.$refs.form.validate()
-      if (this.valid) getContext(this.userId)
-        .then(res => {
-          void(res.object ? (() => {
-            let chatList = res.object;
-            let nameList = this.$_.uniq(chatList.map(e => e.tenantId));
-            let result = [];
-            nameList.forEach(e => {
-              result.push(this.$_.sortBy(chatList.filter(item => item.tenantId == e), (sort) => {
-                return sort.time
-              })[0])
-            })
-            // this.$_.sortBy(res.object, function(item) {
-            //    return item.time;
-            //   });
-            store.commit('SET_USER', {
-              nickname: this.nickname,
-              userId: this.userId,
-              contextList: res.object
-            });
-            this.$router.push('chatList');
-            console.log(this.socketAgent.rendered,'asdasd')
-            !this.socketAgent.rendered?this.socketAgent.init({
-              id: store.getters.curUser.userId,
-              nickname: store.getters.curUser.nickname,
-            }):''
-          })() : "")
-        })
+      if (this.valid) {
+        getContext(this.userId)
+          .then(res => {
+            void (res.object ? (() => {
+              let chatList = res.object
+              let nameList = this.$_.uniq(chatList.map(e => e.tenantId))
+              let result = []
+              nameList.forEach(e => {
+                result.push(this.$_.sortBy(chatList.filter(item => item.tenantId === e), (sort) => {
+                  return sort.time
+                })[0])
+              })
+              // this.$_.sortBy(res.object, function(item) {
+              //    return item.time;
+              //   });
+              store.commit('SET_USER', {
+                nickname: this.nickname,
+                userId: this.userId,
+                contextList: res.object
+              })
+              this.$router.push('chatList')
+              console.log(this.socketAgent.rendered, 'asdasd')
+              void (!this.socketAgent.rendered ? this.socketAgent.init({
+                id: store.getters.curUser.userId,
+                nickname: store.getters.curUser.nickname
+              }) : '')
+            })() : '')
+          })
+      }
     }
   }
 }

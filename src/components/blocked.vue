@@ -34,11 +34,11 @@
 </template>
 <script>
 export default {
-  data() {
+  data () {
     return {}
   },
-  created() {},
-  mounted() {
+  created () {},
+  mounted () {
 
   },
   methods: {}
